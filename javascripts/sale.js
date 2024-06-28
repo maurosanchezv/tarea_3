@@ -1,3 +1,7 @@
+/*Aquí se declara el precio de producto y el número de elemento para asignarle y poder identificar */
+const precio_producto = document.getElementById("product");
+const id_numero = document.getElementById("number");
+let compras = [];
 const products = [
   {
     id: 1,
@@ -21,147 +25,68 @@ const products = [
   },
 ];
 
-const priceElement = document.getElementById("product");
-const numberElement = document.getElementById("number");
-let purchases = [];
-function add() {
-  const targetId = parseInt(priceElement.value);
-  const product = products.find((item) => item.id == targetId);
-  const number = numberElement.value;
+function añadir_carrito() {
+  const valor_precio = parseInt(precio_producto.value);
+  const product = products.find((item) => item.id == valor_precio);
+  const number = id_numero.value;
 
-  let purchase = {
+  let compra_var = {
     product: product,
     number: parseInt(number),
   };
 
-  const newPurchase = purchases.findIndex(
-    (item) => item.product.id === purchase.product.id
+  const nueva_compra = compras.findIndex(
+    (item) => item.product.id === compra_var.product.id
   );
-  if (purchases.length < 1 || newPurchase === -1) {
-    purchases.push(purchase);
+  if (compras.length < 1 || nueva_compra === -1) {
+    compras.push(compra_var);
   } else {
-    purchases[newPurchase].number += purchase.number;
+    compras[nueva_compra].number += compra_var.number;
   }
 
-  window.alert(`${display()}\n subtotal ${subtotal()} yenes.`);
-  priceElement.value = "";
-  numberElement.value = "";
+  window.alert(`${mensaje()}\n subtotal ${subtotal()} yenes.`);
+  precio_producto.value = "";
+  id_numero.value = "";
 }
 
 function subtotal() {
-  return purchases.reduce((prev, purchase) => {
-    return prev + purchase.product.price * purchase.number;
+  return compras.reduce((prev, compra_var) => {
+    return prev + compra_var.product.price * compra_var.number;
   }, 0);
 }
-
-function display() {
-  return purchases
-    .map((purchase) => {
-      return `${purchase.product.name} , ${purchase.product.price} yenes : ${purchase.number} item.\n`;
+/*Esta función es llamada al darle al botón añadir carrito entonces te muestra los productos que adquiriste hasta el momento */
+function mensaje() {
+  return compras
+    .map((compra_var) => {
+      return `${compra_var.product.name} , ${compra_var.product.price} yenes : ${compra_var.number} item.\n`;
     })
     .join("");
 }
-
-function calcPostageFromPurchase(sum) {
-  if (sum == 0 || sum >= 3000) {
-    return 0;
-  } else if (sum < 1000) {
-    return 500;
-  } else {
-    return 250;
-  }
-}
-
-function calc() {
-  const sum = subtotal();
-  const postage = calcPostageFromPurchase(sum);
+/*Calcúla lo añadido al carrito más el gasto de envío si es que hay gastos de envio y lo refleja con una alerta  */
+function total_pagar() {
+  const suma_subtotal = subtotal();
+  const gasto_envio = envio(suma_subtotal);
   window.alert(
-    `${display()}\n el subtotal: ${sum} yenes.\n Los gastos de envío son: ${postage} yenes.\n Total: ${
-      sum + postage
+    `${mensaje()}\n el subtotal: ${suma_subtotal} yenes.\n Los gastos de envío son: ${gasto_envio} yenes.\n Total: ${
+      suma_subtotal + gasto_envio
     } yenes.`
   );
-  purchases = [];
-  priceElement.value = "";
-  numberElement.value = "";
-}
-/*
-const products = [
-  {
-    name: "Mezcla original 200g",
-  },
-  {
-    name: "Mezcla original 500g",
-  },
-  {
-    name: "Mezcla especial 200g",
-  },
-  {
-    name: "Mezcla especial 500g",
-  },
-];
-const priceElement = document.getElementById("product");
-const numberElement = document.getElementById("number");
-let purchases = [];
-
-function add() {
-  const price = priceElement.value;
-  const number = numberElement.value;
-
-  let purchase = {
-    price: parseInt(price),
-    number: parseInt(number),
-  };
-
-  const newPurchase = purchases.findIndex(
-    (item) => item.price === purchase.price
-  ); // --1
-  if (purchases.length < 1 || newPurchase === -1) {
-    //--2
-    purchases.push(purchase);
-  } else {
-    º;
-    purchases[newPurchase].number += purchase.number; //--3
-  }
-
-  window.alert(`${display()}\n subtotal ${subtotal()} círculo`);
-  priceElement.value = "";
-  numberElement.value = "";
+  compras = [];
+  precio_producto.value = "";
+  id_numero.value = "";
 }
 
-function display() {
-  return purchases
-    .map((purchase) => {
-      return `${purchase.products.name} ${purchase.price} El precio es.${purchase.number}punto`;
-    })
-    .join("\n");
-}
-
-function subtotal() {
-  return purchases.reduce((prev, purchase) => {
-    return prev + purchase.price * purchase.number;
-  }, 0);
-}
-
-function calcPostageFromPurchase(sum) {
-  if (sum == 0 || sum >= 3000) {
+/*Esta función lo que hace es calcular Cuánto es lo que debes pagar de envío dependiendo de lo que hayas comprado */
+function envio(suma_subtotal) {
+  if (suma_subtotal == 0 || suma_subtotal >= 3000) {
     return 0;
-  } else if (sum < 2000) {
+  } else if (suma_subtotal < 1000) {
     return 500;
   } else {
     return 250;
   }
 }
-
-function calc() {
-  const sum = subtotal();
-  const postage = calcPostageFromPurchase(sum);
-  window.alert(
-    `${display()}\n subtotal Es${sum} Yenes, los gastos de envío son.${postage} Yenes. Total.${
-      sum + postage
-    }.`
-  );
-  purchases = [];
-  priceElement.value = "";
-  numberElement.value = "";
-}
-*/
+/* El diseño y las imágenes deben mostrarse de la misma forma que en la página de muestra.
+Al añadir un producto, el nombre del producto, el importe y la cantidad deben aparecer en una ventana emergente.
+Cuando se muestra el importe total, el nombre del producto, el importe, la cantidad, el subtotal, los gastos de envío y el importe total de los productos añadidos deben mostrarse correctamente.
+Los gastos de envío deben ser de 500 yenes para un importe total o inferior a 2000 yenes, de 250 yenes para 2000 yenes o más y de 0 yenes para 3000 yenes o más.*/
